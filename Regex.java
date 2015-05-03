@@ -1,8 +1,10 @@
 import java.util.Scanner;
 import java.util.HashMap;
+import java.io.*;
 class Regex{
 	public static void howOftenMenu(){
 		// matching taken from http://www.eclipse.org/tptp/home/downloads/installguide/gla_42/ref/rregexp.html
+		// http://www.rexegg.com/regex-quickstart.html
 		System.out.println("Often Menu");
 		System.out.println("1) at least n but not more than m times -- defining m and n later");
 		System.out.println("2) at least n but no more than m time -- n and m defined later");
@@ -36,8 +38,8 @@ class Regex{
 	public static void whatTypeMenu(){
 		System.out.println("Type Menu");
 		System.out.println("1) everything except \\n in a regular expression within parentheses");
-		System.out.println("2) a null token matching the beginning of a string or line (i.e., the position right after a newline or right before the beginning of a string) in a regular expression within parentheses");
-		System.out.println("3) a null token matching the end of a string or line (that is, the position right before a newline or right after the end of a string) in a regular expression within parentheses");
+		System.out.println("2) a null token matching the beginning of a string or line");
+		System.out.println("3) a null token matching the end of a string or line");
 		System.out.println("4) backspace inside a character class ([abcd])");	
 		System.out.println("5) null token matching a word boundary (\\w on one side and \\W on the other)");
 		System.out.println("6) null token matching a boundary that isn't a word boundary");
@@ -55,6 +57,7 @@ class Regex{
 		System.out.println("18) a non-whitespace character [^\\t\\n\\r\\f]");
 		System.out.println("19) the corresponding control character");
 		System.out.println("20) the null character. Any other backslashed character matches itself");
+		System.out.println("21) standard letters or numbers");
 	}
 
 	public static void populateWhatType(HashMap type){
@@ -93,6 +96,7 @@ class Regex{
 		// create and initialize input varaible, as well as input and output 
 		Scanner sc = new Scanner(System.in);
 		String output = "/";
+		String piece = "";
 		int input,n,m;
 		HashMap<Integer, String> often = new HashMap<Integer,String>();
 		HashMap<Integer, String> type = new HashMap<Integer,String>();
@@ -102,28 +106,46 @@ class Regex{
 		// looping through, the number of times this loop is executed coorelates to the length of the regular expressions
 		while(true){
 			whatTypeMenu();
-			input = askFor("Please enter a positive number or enter zero to quit : ", -1, sc);
+			input = askFor("Please enter a positive number or enter zero to quit ", -1, sc);
 			// RegEx is complete
 			if(input == 0) break;
-			output += type.get(input);
+			if(input != 21) piece = type.get(input);
+			else {
+				String verify = "a";
+				while (!verify.equals("Y")){
+					System.out.println("Please type the string sequence you would like to see next : ");
+					InputStreamReader in = new InputStreamReader(System.in);
+					BufferedReader reader = new BufferedReader(in);
+					try{
+						piece = reader.readLine();
+					} 
+					catch(Exception e){}
+					System.out.println("You typed: " + piece);
+					System.out.println("Is this what you wanted? Answer Y (must be capital) for yes and anything else for no");
+					try{
+						verify = reader.readLine();
+					} catch (Exception e){}
+				}
+			}
+			output += piece;
 			
 			howOftenMenu();
-			input = askFor("Please enter a positive number for how often you want to see " + type.get(input), 0 , sc);
-			if(input <= 6){
+			input = askFor("Please enter a non-negative number for how often you want to see or zero for no quantifier" + piece, -1, sc);
+			if(input <= 6 && input != 0){
 				String app = often.get(input);
 				// ask for n
 				n = askFor("Please enter a non-negative number for the lower bound n : ", -1, sc);
 				app = app.replaceAll("n", Integer.toString(n));
-				if (input <= 2){
+				if (input <= 2 && input != 0){
 					// ask for m
 					m = askFor("Please enter a number large than n as the upper bound m : ", n, sc);
 					app = app.replaceAll("m", Integer.toString(m));
 				}
 				// concatenate the piece 
 				output += app;
-			} else {
+			} else if (input != 0) {
 				output += often.get(input);
-			}
+			} 
 			System.out.println("The current Regex is : " + output);
 		}
 		// print the output at the end	
