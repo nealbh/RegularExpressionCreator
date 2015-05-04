@@ -10,14 +10,9 @@ class Regex{
 		System.out.println("2) at least n but no more than m time -- n and m defined later");
 		System.out.println("3) at least n times -- defining n later");
 		System.out.println("4) exactly n times -- defining n later");
-		System.out.println("5) exactly n times -- n defined later");
-		System.out.println("6) at least n times -- n defined later");
-		System.out.println("7) 0 or more times");
-		System.out.println("8) 1 or more times");
-		System.out.println("9) 0 or 1 times");
-		System.out.println("10) 0 or more times");
-		System.out.println("11) 1 or more times");
-		System.out.println("12) 0 or 1 times");
+		System.out.println("5) 0 or more times");
+		System.out.println("6) 1 or more times");
+		System.out.println("7) 0 or 1 times");
 	}
 
 	public static void populateHowOften(HashMap often){
@@ -25,14 +20,9 @@ class Regex{
 		often.put(2, "{n,m}?");
 		often.put(3, "{n,}");
 		often.put(4,"{n}");
-		often.put(5, "{n}?");
-		often.put(6, "{n,}?");
-		often.put(7, "*");
-		often.put(8, "+");
-		often.put(9,"?");
-		often.put(10, "*?");
-		often.put(11, "+?");
-		often.put(12, "??");
+		often.put(5, "*");
+		often.put(6, "+");
+		often.put(7,"?");
 	}
 
 	public static void whatTypeMenu(){
@@ -40,7 +30,7 @@ class Regex{
 		System.out.println("1) everything except \\n in a regular expression within parentheses");
 		System.out.println("2) a null token matching the beginning of a string or line");
 		System.out.println("3) a null token matching the end of a string or line");
-		System.out.println("4) backspace inside a character class ([abcd])");	
+		System.out.println("4) backspace inside a character class");	
 		System.out.println("5) null token matching a word boundary (\\w on one side and \\W on the other)");
 		System.out.println("6) null token matching a boundary that isn't a word boundary");
 		System.out.println("7) only at beginning of string");
@@ -57,7 +47,7 @@ class Regex{
 		System.out.println("18) a non-whitespace character [^\\t\\n\\r\\f]");
 		System.out.println("19) the corresponding control character");
 		System.out.println("20) the null character. Any other backslashed character matches itself");
-		System.out.println("21) standard letters or numbers");
+		System.out.println("21) standard letters or numbers that you can type in later");
 	}
 
 	public static void populateWhatType(HashMap type){
@@ -83,12 +73,12 @@ class Regex{
 		type.put(20, "\\0");
 	}
 	
-	public static int askFor(String var, int lowerBound, Scanner sc){
+	public static int askFor(String var, int lowerBound, int upperBound, Scanner sc){
 		int input;
 		do{
 			System.out.println( var + " : ");
 			input = sc.nextInt();
-		} while (input < lowerBound);	
+		} while (input <= lowerBound || input >= upperBound);	
 		return input;	
 	}
 
@@ -106,7 +96,7 @@ class Regex{
 		// looping through, the number of times this loop is executed coorelates to the length of the regular expressions
 		while(true){
 			whatTypeMenu();
-			input = askFor("Please enter a positive number or enter zero to quit ", -1, sc);
+			input = askFor("Please enter a positive number less than 22 or enter zero to quit and end the regular expression ", -1, 22, sc);
 			// RegEx is complete
 			if(input == 0) break;
 			if(input != 21) piece = type.get(input);
@@ -114,6 +104,7 @@ class Regex{
 				String verify = "a";
 				while (!verify.equals("Y")){
 					System.out.println("Please type the string sequence you would like to see next : ");
+					// necessary to take string input from the command line
 					InputStreamReader in = new InputStreamReader(System.in);
 					BufferedReader reader = new BufferedReader(in);
 					try{
@@ -130,15 +121,15 @@ class Regex{
 			output += piece;
 			
 			howOftenMenu();
-			input = askFor("Please enter a non-negative number for how often you want to see or zero for no quantifier" + piece, -1, sc);
-			if(input <= 6 && input != 0){
+			input = askFor("Please enter a non-negative number for how often you want to see " + piece, -1, Integer.MAX_VALUE, sc);
+			if(input <= 4 && input != 0){
 				String app = often.get(input);
 				// ask for n
-				n = askFor("Please enter a non-negative number for the lower bound n : ", -1, sc);
+				n = askFor("Please enter a non-negative number for the lower bound n : ", -1, Integer.MAX_VALUE, sc);
 				app = app.replaceAll("n", Integer.toString(n));
 				if (input <= 2 && input != 0){
 					// ask for m
-					m = askFor("Please enter a number large than n as the upper bound m : ", n, sc);
+					m = askFor("Please enter a number large than n as the upper bound m : ", n, Integer.MAX_VALUE, sc);
 					app = app.replaceAll("m", Integer.toString(m));
 				}
 				// concatenate the piece 
